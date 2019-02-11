@@ -1,0 +1,11 @@
+# Pull base image
+FROM postgres:latest
+
+ARG PROJECT_DIR=.
+ARG PROJECT_NAME
+ARG INIT_SQL=$PROJECT_DIR/$PROJECT_NAME/var/sql
+
+# Set work directory
+WORKDIR /docker-entrypoint-initdb.d
+
+COPY $INIT_SQL /docker-entrypoint-initdb.d/
