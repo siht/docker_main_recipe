@@ -1,6 +1,6 @@
-# Recipe for docker django single app
+# Recipe dedicated to run django app with postgres, uwsgi and nginx
 
-this recipe allows to run a django application without libraries for images or else. Its too simple and only for development
+this recipe allows to run a django application for production
 
 # What do you need
 
