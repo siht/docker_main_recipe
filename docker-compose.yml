@@ -22,26 +22,41 @@ services:
       dockerfile: Dockerfile_django
       args:
         - PROJECT_NAME=${PROJECT_NAME}
-    command: uwsgi --socket 0.0.0.0:3031 --uid root --module settings.wsgi
+        - MEDIA_PATH=${MEDIA_PATH}
+        - STATIC_PATH=${STATIC_PATH}
+        - SOCKETS_PATH=${SOCKETS_PATH}
+    command: uwsgi --socket ${SOCKETS_PATH}/${PROJECT_NAME}.sock --module settings.wsgi --uid ${UID_FOR_SOCKETS} --gid ${GID_FOR_SOCKETS}
     restart: always
+    volumes:
+      - data_for_serve:${SERVER_DATA}
     environment:
       SECRET_KEY: ${SECRET_KEY}
       DEFAULT_PG_USER: ${DEFAULT_PG_USER}
       DEFAULT_PG_DB: ${DEFAULT_PG_DB}
       DEFAULT_PG_PASSWORD: ${DEFAULT_PG_PASSWORD}
+      STATIC_PATH: ${STATIC_PATH}
     depends_on:
       - db
   server:
     image: nginx
     restart: always
     volumes:
+      - data_for_serve:${SERVER_DATA}
       - ./mysite.template:/etc/nginx/conf.d/mysite.template
+      - ./nginx_conf.template:/etc/nginx/nginx_conf.template
     environment:
-      NGINX_PORT: 80
-    command: /bin/bash -c "envsubst < /etc/nginx/conf.d/mysite.template > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"
+      USER: ${UID_FOR_SOCKETS}
+      NGINX_INTERNAL_PORT: ${NGINX_INTERNAL_PORT}
+      SOCKETS_PATH: ${SOCKETS_PATH}
+      MEDIA_PATH: ${MEDIA_PATH}
+      STATIC_PATH: ${STATIC_PATH}
+      PROJECT_NAME: ${PROJECT_NAME}
+    command: /bin/bash -c "((envsubst < /etc/nginx/nginx_conf.template > /etc/nginx/nginx.conf) && (envsubst < /etc/nginx/conf.d/mysite.template > /etc/nginx/conf.d/default.conf)) && exec nginx -g 'daemon off;'"
     ports:
-      - 8000:80
+      - ${NGINX_OUT_PORT}:${NGINX_INTERNAL_PORT}
     depends_on:
       - app
+
 volumes:
   postgres_data:
+  data_for_serve:
