@@ -51,6 +51,7 @@ services:
       MEDIA_PATH: ${MEDIA_PATH}
       STATIC_PATH: ${STATIC_PATH}
       PROJECT_NAME: ${PROJECT_NAME}
+      DOLLAR: $$
     command: /bin/bash -c "((envsubst < /etc/nginx/nginx_conf.template > /etc/nginx/nginx.conf) && (envsubst < /etc/nginx/conf.d/mysite.template > /etc/nginx/conf.d/default.conf)) && exec nginx -g 'daemon off;'"
     ports:
       - ${NGINX_OUT_PORT}:${NGINX_INTERNAL_PORT}
