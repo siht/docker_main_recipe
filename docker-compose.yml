@@ -25,16 +25,14 @@ services:
         - MEDIA_PATH=${MEDIA_PATH}
         - STATIC_PATH=${STATIC_PATH}
         - SOCKETS_PATH=${SOCKETS_PATH}
-    command: uwsgi --socket ${SOCKETS_PATH}/${PROJECT_NAME}.sock --module settings.wsgi --uid ${UID_FOR_SOCKETS} --gid ${GID_FOR_SOCKETS}
+    command: uwsgi --socket ${SOCKETS_PATH}/${PROJECT_NAME}.sock --module ${UWSGI_PARENT_MODULE_NAME}.wsgi --uid ${UID_FOR_SOCKETS} --gid ${GID_FOR_SOCKETS}
     restart: always
     volumes:
       - data_for_serve:${SERVER_DATA}
     environment:
+      DEFAULT_DB: postgres://${DEFAULT_PG_USER}:${DEFAULT_PG_PASSWORD}@db/${DEFAULT_PG_DB}
       SECRET_KEY: ${SECRET_KEY}
-      DEFAULT_PG_USER: ${DEFAULT_PG_USER}
-      DEFAULT_PG_DB: ${DEFAULT_PG_DB}
-      DEFAULT_PG_PASSWORD: ${DEFAULT_PG_PASSWORD}
-      STATIC_PATH: ${STATIC_PATH}
+      STATIC_ROOT: ${STATIC_PATH}
     depends_on:
       - db
   server:
