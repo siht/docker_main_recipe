@@ -31,8 +31,14 @@ services:
       - data_for_serve:${SERVER_DATA}
     environment:
       DEFAULT_DB: postgres://${DEFAULT_PG_USER}:${DEFAULT_PG_PASSWORD}@db/${DEFAULT_PG_DB}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS}
       SECRET_KEY: ${SECRET_KEY}
       STATIC_ROOT: ${STATIC_PATH}
+      LANGUAGE_CODE: ${LANGUAGE_CODE}
+      TIME_ZONE: ${TIME_ZONE}
+      USE_I18N: ${USE_I18N}
+      USE_L10N: ${USE_L10N}
+      USE_TZ: ${USE_TZ}
     depends_on:
       - db
   server:
